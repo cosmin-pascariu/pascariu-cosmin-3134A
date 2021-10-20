@@ -1,0 +1,12 @@
+D:\EGC_Projects\pascariu-cosmin-3134A\pascariu-cosmin-3134A\bin\Debug\pascariu-cosmin-3134A.exe.config
+D:\EGC_Projects\pascariu-cosmin-3134A\pascariu-cosmin-3134A\bin\Debug\pascariu-cosmin-3134A.exe
+D:\EGC_Projects\pascariu-cosmin-3134A\pascariu-cosmin-3134A\bin\Debug\pascariu-cosmin-3134A.pdb
+D:\EGC_Projects\pascariu-cosmin-3134A\pascariu-cosmin-3134A\bin\Debug\OpenTK.dll
+D:\EGC_Projects\pascariu-cosmin-3134A\pascariu-cosmin-3134A\bin\Debug\OpenTK.GLControl.dll
+D:\EGC_Projects\pascariu-cosmin-3134A\pascariu-cosmin-3134A\bin\Debug\OpenTK.pdb
+D:\EGC_Projects\pascariu-cosmin-3134A\pascariu-cosmin-3134A\bin\Debug\OpenTK.xml
+D:\EGC_Projects\pascariu-cosmin-3134A\pascariu-cosmin-3134A\bin\Debug\OpenTK.GLControl.xml
+D:\EGC_Projects\pascariu-cosmin-3134A\pascariu-cosmin-3134A\obj\Debug\pascariu-cosmin-3134A.csproj.AssemblyReference.cache
+D:\EGC_Projects\pascariu-cosmin-3134A\pascariu-cosmin-3134A\obj\Debug\pascariu-cosmin-3134A.csproj.CoreCompileInputs.cache
+D:\EGC_Projects\pascariu-cosmin-3134A\pascariu-cosmin-3134A\obj\Debug\pascariu-cosmin-3134A.exe
+D:\EGC_Projects\pascariu-cosmin-3134A\pascariu-cosmin-3134A\obj\Debug\pascariu-cosmin-3134A.pdb
