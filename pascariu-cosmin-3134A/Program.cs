@@ -1,194 +1,271 @@
 ﻿using System;
 using System.Drawing;
-using System.Threading;
 using OpenTK;
+using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Input;
 
-/**
-    Aplicația utilizează biblioteca OpenTK v2.0.0 (stable) oficială și OpenTK. GLControl v2.0.0
-    (unstable) neoficială. Aplicația fiind scrisă în modul consolă nu va utiliza controlul WinForms
-    oferit de OpenTK!
-    Tipul de ferestră utilizat: GAMEWINDOW. Se demmonstrează modul imediat de randare (vezi comentariul!)...
-**/
-namespace OpenTK_console_sample02
+namespace pascariu_cosmin_3134A
 {
-    class SimpleWindow3D : GameWindow
+    class Program : GameWindow
     {
+        //declararea vectorului care stocheaza coordonatele triunghiului
+        private double[,] v = new double[3,3];
+        private double r=1, g=1, b=1 ,a=1;
+        private const double MIN = 0;
+        private const double MAX = 1;
+        private const double step = 0.025;
+        private Camera camera;
+        private Color color1, color2, color3;
 
-        const float rotation_speed = 100.0f;
-        float angle;
-        bool showCube = true;
-        float rotationSense = 0;
-        int x = 0;
-        KeyboardState lastKeyPress;
+        System.IO.StreamReader file = new System.IO.StreamReader(@"./../../date.txt"); /// Citirea din fisier pentru cerinta 8
 
-        // Constructor.
-        public SimpleWindow3D() : base(800, 600)
+        public Program() : base(800, 600, new GraphicsMode(32, 24, 0, 8))
         {
             VSync = VSyncMode.On;
+
+            Console.WriteLine("OpenGl versiunea: " + GL.GetString(StringName.Version));
+            Title = "OpenGl versiunea: " + GL.GetString(StringName.Version) + " (mod imediat)";
+            int contor = 0;
+            string line;
+
+            camera = new Camera();
+            ///Citirea coordonatelor vertexurilor din fisierul text
+            while ((line = file.ReadLine()) != null)
+            {
+                string[] lines = line.Split(',');
+                for (int i = 0; i < lines.Length; i++)
+                    v[contor,i] = Convert.ToDouble(lines[i]);
+                contor++;
+            }
+
+            //Crearea culorilor pentru cel de-al doilea triunghi - cerinta 9
+            color1 = Color.White;
+            color2 = Color.White;
+            color3 = Color.White;
         }
 
-        /**Setare mediu OpenGL și încarcarea resurselor (dacă e necesar) - de exemplu culoarea de
-           fundal a ferestrei 3D.
-           Atenție! Acest cod se execută înainte de desenarea efectivă a scenei 3D. */
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
 
-            GL.ClearColor(Color.Gray);
-            GL.Enable(EnableCap.DepthTest);//
+            GL.ClearColor(Color.Black); //Am schimbat culoarea fundalului pentru a iesi in evidenta schimbarea culorilor triunghiului
+            GL.Enable(EnableCap.DepthTest);
+            GL.DepthFunc(DepthFunction.Less);
+            GL.Hint(HintTarget.PolygonSmoothHint, HintMode.Nicest);
         }
 
-        /**Inițierea afișării și setarea viewport-ului grafic. Metoda este invocată la redimensionarea
-           ferestrei. Va fi invocată o dată și imediat după metoda ONLOAD()!
-           Viewport-ul va fi dimensionat conform mărimii ferestrei active (cele 2 obiecte pot avea și mărimi 
-           diferite). */
         protected override void OnResize(EventArgs e)
         {
             base.OnResize(e);
 
-            GL.Viewport(0, 0, Width, Height);
+            GL.Viewport(0, 0, Width, Height); //Am dat alte valori pentru a plasa triunghiul in centrul ferestrei
 
             double aspect_ratio = Width / (double)Height;
 
             Matrix4 perspective = Matrix4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, (float)aspect_ratio, 1, 64);
             GL.MatrixMode(MatrixMode.Projection);
             GL.LoadMatrix(ref perspective);
-        }
 
-        /** Secțiunea pentru "game logic"/"business logic". Tot ce se execută în această secțiune va fi randat
-            automat pe ecran în pasul următor - control utilizator, actualizarea poziției obiectelor, etc. */
+            Matrix4 lookat = Matrix4.LookAt(0, 0, 30, 0, 0, 0, 0, 1, 0);
+            GL.MatrixMode(MatrixMode.Modelview);
+            GL.LoadMatrix(ref lookat);
+
+            ///apelare metoda pentru initializarea pozitiei camerei
+            camera.SetCamera();
+        }
+        
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
             base.OnUpdateFrame(e);
 
-            KeyboardState keyboard = OpenTK.Input.Keyboard.GetState();
-            MouseState mouse = OpenTK.Input.Mouse.GetState();
+            KeyboardState keyboard = Keyboard.GetState();
+            MouseState mouse = Mouse.GetState();
 
-            // Se utilizeaza mecanismul de control input oferit de OpenTK (include perifcerice multiple, mai ales pentru gaming - gamepads, joysticks, etc.).
-            if (keyboard[OpenTK.Input.Key.Escape])
+            #region rgbaValuesFromKeyboard
+            ////Modificarea unghiului camerei prin intermediul mouse-ului
+            if (mouse[OpenTK.Input.MouseButton.Left] && mouse.X > 100)
+            {
+                camera.RotateRight();
+            }
+            else if (mouse[OpenTK.Input.MouseButton.Left] && mouse.X < 100)
+            {
+                camera.RotateLeft();
+            }
+            /////////////////////////
+            
+
+            ///////Schimbarea canalelor de culoare a primului triunghi - cerinta 8
+            if (keyboard[Key.R] && keyboard[Key.Up])
+            {
+                if(r >= MIN && r < MAX-0.1)
+                    r += step;
+               
+            }
+            if (keyboard[Key.R] && keyboard[Key.Down])
+            {
+                
+                if(r > MIN+0.1 && r <=MAX)
+                    r -= step;
+               
+            }
+            if (keyboard[Key.G] && keyboard[Key.Up])
+            {
+                if (g >= MIN && g < MAX-0.1)
+                {
+                    g += step;
+                }
+            }
+            if (keyboard[Key.G] && keyboard[Key.Down])
+            {
+                if (g > MIN+0.1 && g <= MAX)
+                {
+                    g -= step;
+                }
+            }
+            if (keyboard[Key.B] && keyboard[Key.Up])
+            {
+                if (b >= MIN && b < MAX-0.1)
+                {
+                    b += step;
+                }
+            }
+            if (keyboard[Key.B] && keyboard[Key.Down])
+            {
+                if (b > MIN+0.1 && b <= MAX)
+                {
+                    b -= step;
+                }
+            }
+            if (keyboard[Key.A] && keyboard[Key.Up])
+            {
+                if (a >= MIN && a < MAX-0.1)
+                {
+                    a += step;
+                }
+            }
+            if (keyboard[Key.A] && keyboard[Key.Down])
+            {
+                if (a > MIN+0.1 && a <= MAX)
+                {
+                    a -= step;
+                }
+            }
+            /////////////////////////
+            #endregion
+
+            Color vert1 = color1;
+            Color vert2 = color2;
+            Color vert3 = color3;
+            ///Schimbarea culorilor celui de-al doilea triunghi
+            if(keyboard[Key.Number1])
+            {
+                color1 = Color.FromArgb(255, 255, 0, 255);
+            }
+            if (keyboard[Key.Number2])
+            {
+                color1 = Color.FromArgb(255,0, 0, 255);
+            }
+            if (keyboard[Key.Number3])
+            {
+                color2 = Color.FromArgb(255, 120, 120, 25);
+            }
+            if (keyboard[Key.Number4])
+            {
+                color2 = Color.FromArgb(255, 10, 70, 251);
+            }
+            if (keyboard[Key.Number5])
+            {
+                color3 = Color.FromArgb(255, 10, 250, 0);
+            }
+            if (keyboard[Key.Number6])
+            {
+                color3 = Color.FromArgb(255, 100, 170, 21);
+            }
+            /////////////////////////////////////
+            ///
+            ////Afisarea culorilor rgb in consola
+            if(vert1 != color1)
+            {
+                Console.WriteLine("Vertex1: " + vert1);
+            }
+            if (vert2 != color2)
+            {
+                Console.WriteLine("Vertex2: " + vert3);
+            }
+            if (vert3 != color3)
+            {
+                Console.WriteLine("Vertex3: " + vert3);
+            }
+            if (keyboard[Key.Escape])
             {
                 Exit();
-                return;
+                file.Close();
             }
-            else if (keyboard[OpenTK.Input.Key.L])
-            {
-                rotationSense = 1.0f; //Rotire la stanga
-            }
-            else if (keyboard[OpenTK.Input.Key.R])
-            {
-                rotationSense = -1.0f; //Rotire la dreapta
-            }
-            lastKeyPress = keyboard;
-
-
-            if (mouse[OpenTK.Input.MouseButton.Left])
-            {
-                x = mouse.X / 10;
-            }
-
         }
 
-        /** Secțiunea pentru randarea scenei 3D. Controlată de modulul logic din metoda ONUPDATEFRAME().
-            Parametrul de intrare "e" conține informatii de timing pentru randare. */
         protected override void OnRenderFrame(FrameEventArgs e)
         {
             base.OnRenderFrame(e);
 
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+            GL.Clear(ClearBufferMask.ColorBufferBit);
+            GL.Clear(ClearBufferMask.DepthBufferBit);
 
-            Matrix4 lookat = Matrix4.LookAt(15, 50, 15, 0, 0, 0, 0, 1, 0);
-            GL.MatrixMode(MatrixMode.Modelview);
-            GL.LoadMatrix(ref lookat);
+            DrawAxes();
 
-            angle += rotation_speed * (float)e.Time;
-
-            if (rotationSense != 0)
-                GL.Rotate(angle, 0.0f, rotationSense, 0.0f);
-
-            GL.Translate(x, 0.0f, 0.0f);// Miscarea obiectului
-            // Exportăm controlul randării obiectelor către o metodă externă (modularizare).
-            if (showCube == true)
-            {
-                DrawCube();//
-                DrawAxes_OLD();//
-
-
-
-            }
+            DrawObjects();
 
             SwapBuffers();
-            Thread.Sleep(1);
         }
 
-        private void DrawAxes_OLD()
+        private void DrawAxes()
         {
-            GL.Begin(PrimitiveType.Lines);
+            GL.LineWidth(1.0f);
 
-            // X
+            // Desenează axa Ox (cu roșu).
+            GL.Begin(PrimitiveType.Lines);
             GL.Color3(Color.Red);
             GL.Vertex3(0, 0, 0);
-            GL.Vertex3(20, 0, 0);
+            GL.Vertex3(75, 0, 0);
+            GL.End();
 
-            // Y
-            GL.Color3(Color.Blue);
-            GL.Vertex3(0, 0, 0);
-            GL.Vertex3(0, 20, 0);
-
-            // Z
+            // Desenează axa Oy (cu galben).
+            GL.Begin(PrimitiveType.Lines);
             GL.Color3(Color.Yellow);
             GL.Vertex3(0, 0, 0);
-            GL.Vertex3(0, 0, 20);
+            GL.Vertex3(0, 75, 0); ;
+            GL.End();
 
-
+            //// Desenează axa Oz (cu verde).
+            GL.Begin(PrimitiveType.Lines);
+            GL.Color3(Color.Green);
+            GL.Vertex3(0, 0, 0);
+            GL.Vertex3(0, 0, 75);
             GL.End();
         }
-
-        // Utilizăm modul imediat!!!
-        private void DrawCube()
+        private void DrawObjects()
         {
-            GL.Begin(PrimitiveType.Quads);
-
-            GL.Color3(Color.Silver);
-            GL.Vertex3(-1.0f, -1.0f, -1.0f);
-            GL.Vertex3(-1.0f, 1.0f, -1.0f);
-            GL.Vertex3(1.0f, 1.0f, -1.0f);
-            GL.Vertex3(1.0f, -1.0f, -1.0f);
-
-            GL.Color3(Color.Honeydew);
-            GL.Vertex3(-1.0f, -1.0f, -1.0f);
-            GL.Vertex3(1.0f, -1.0f, -1.0f);
-            GL.Vertex3(1.0f, -1.0f, 1.0f);
-            GL.Vertex3(-1.0f, -1.0f, 1.0f);
-
-            GL.Color3(Color.Moccasin);
-
-            GL.Vertex3(-1.0f, -1.0f, -1.0f);
-            GL.Vertex3(-1.0f, -1.0f, 1.0f);
-            GL.Vertex3(-1.0f, 1.0f, 1.0f);
-            GL.Vertex3(-1.0f, 1.0f, -1.0f);
-
-            GL.Color3(Color.IndianRed);
-            GL.Vertex3(-1.0f, -1.0f, 1.0f);
-            GL.Vertex3(1.0f, -1.0f, 1.0f);
-            GL.Vertex3(1.0f, 1.0f, 1.0f);
-            GL.Vertex3(-1.0f, 1.0f, 1.0f);
-
-            GL.Color3(Color.PaleVioletRed);
-            GL.Vertex3(-1.0f, 1.0f, -1.0f);
-            GL.Vertex3(-1.0f, 1.0f, 1.0f);
-            GL.Vertex3(1.0f, 1.0f, 1.0f);
-            GL.Vertex3(1.0f, 1.0f, -1.0f);
-
-            GL.Color3(Color.ForestGreen);
-            GL.Vertex3(1.0f, -1.0f, -1.0f);
-            GL.Vertex3(1.0f, 1.0f, -1.0f);
-            GL.Vertex3(1.0f, 1.0f, 1.0f);
-            GL.Vertex3(1.0f, -1.0f, 1.0f);
-
+            //////Desenare folosind un singur apel GL.Begin
+            ///Desenarea primului triunghi
+            GL.LineWidth(1.0f);
+            GL.Begin(PrimitiveType.Triangles);
+            GL.Color4(r, g, b, a);
+            GL.Vertex3(v[0, 0], v[0, 1], v[0, 2]);
+            GL.Vertex3(v[1, 0], v[1, 1], v[1, 2]);
+            GL.Vertex3(v[2, 0], v[2, 1], v[2, 2]);
+           
+            ////Desenarea celui de-al doilea triunghi
+            GL.LineWidth(1.0f);
+            GL.Color3(color1);
+            GL.Vertex3(0,0,0);
+            GL.Color3(color2);
+            GL.Vertex3(10,0,0);
+            GL.Color3(color3);
+            GL.Vertex3(5,0,10);
             GL.End();
+            /////////////////////////////
         }
+
 
         [STAThread]
         static void Main(string[] args)
@@ -202,12 +279,12 @@ namespace OpenTK_console_sample02
                Ideal ar fi ca după fiecare UpdateFrame să avem si un RenderFrame astfel încât toate obiectele generate
                în scena 3D să fie actualizate fără pierderi (desincronizări între logica aplicației și imaginea randată
                în final pe ecran). */
-            using (SimpleWindow3D example = new SimpleWindow3D())
+            using (Program example = new Program())
             {
-
-                // Verificați semnătura funcției în documentația inline oferită de IntelliSense!
                 example.Run(30.0, 0.0);
             }
+
+           
         }
     }
 
