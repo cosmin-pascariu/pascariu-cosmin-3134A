@@ -15,7 +15,6 @@ D:\pascariu-cosmin-3134a\pascariu-cosmin-3134A\bin\Debug\pascariu-cosmin-3134A.e
 D:\pascariu-cosmin-3134a\pascariu-cosmin-3134A\bin\Debug\pascariu-cosmin-3134A.pdb
 D:\pascariu-cosmin-3134a\pascariu-cosmin-3134A\bin\Debug\OpenTK.dll
 D:\pascariu-cosmin-3134a\pascariu-cosmin-3134A\bin\Debug\OpenTK.GLControl.dll
-D:\pascariu-cosmin-3134a\pascariu-cosmin-3134A\bin\Debug\OpenTK.pdb
 D:\pascariu-cosmin-3134a\pascariu-cosmin-3134A\bin\Debug\OpenTK.xml
 D:\pascariu-cosmin-3134a\pascariu-cosmin-3134A\bin\Debug\OpenTK.GLControl.xml
 D:\pascariu-cosmin-3134a\pascariu-cosmin-3134A\obj\Debug\pascariu-cosmin-3134A.csproj.CoreCompileInputs.cache
