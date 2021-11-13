@@ -21,4 +21,3 @@ D:\pascariu-cosmin-3134a\pascariu-cosmin-3134A\obj\Debug\pascariu-cosmin-3134A.c
 D:\pascariu-cosmin-3134a\pascariu-cosmin-3134A\obj\Debug\pascariu-cosmin-3134A.csproj.CopyComplete
 D:\pascariu-cosmin-3134a\pascariu-cosmin-3134A\obj\Debug\pascariu-cosmin-3134A.exe
 D:\pascariu-cosmin-3134a\pascariu-cosmin-3134A\obj\Debug\pascariu-cosmin-3134A.pdb
-D:\pascariu-cosmin-3134a\pascariu-cosmin-3134A\obj\Debug\pascariu-cosmin-3134A.csprojAssemblyReference.cache

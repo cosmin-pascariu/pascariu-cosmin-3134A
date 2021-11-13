@@ -11,79 +11,264 @@ using OpenTK.Input;
 
 namespace pascariu_cosmin_3134A
 {
+    /// <summary>
+    /// The graphic window. Contains the canvas (viewport to be draw).
+    /// </summary>
     class Window : GameWindow
     {
-        private CreateCube cube;
-        private Axes axes;
-       
-        private Color color1, color2, color3;
 
-        public Window() : base(800, 600, new GraphicsMode(32, 24, 0, 8))
+        private KeyboardState previousKeyboard;
+        private MouseState previousMouse;
+        private readonly Randomizer rando;
+        private readonly Axes ax;
+        private readonly Grid grid;
+        private readonly Camera3DIsometric cam;
+        private bool displayMarker;
+        private ulong updatesCounter;
+        private ulong framesCounter;
+        private MassiveObject objy;
+
+        private Objectoid objec;
+        private bool GRAVITY = true;
+        // DEFAULTS
+        private readonly Color DEFAULT_BKG_COLOR = Color.FromArgb(49, 50, 51);
+
+        /// <summary>
+        /// Parametrised constructor. Invokes the anti-aliasing engine. All inits are placed here, for convenience.
+        /// </summary>
+        public Window() : base(1280, 768, new GraphicsMode(32, 24, 0, 8))
         {
             VSync = VSyncMode.On;
 
-            Console.WriteLine("OpenGl versiunea: " + GL.GetString(StringName.Version));
-            Title = "OpenGl versiunea: " + GL.GetString(StringName.Version);
+            // inits
+            rando = new Randomizer();
+            ax = new Axes();
+            grid = new Grid();
+            cam = new Camera3DIsometric();
+            objy = new MassiveObject(Color.Red);
 
-            axes = new Axes();
-            cube = new CreateCube("./../../date.txt");
+            objec = new Objectoid(GRAVITY, "./../../date.txt");
+
+            DisplayHelp();
+            displayMarker = false;
+            updatesCounter = 0;
+            framesCounter = 0;
         }
 
+        /// <summary>
+        /// OnLoad() method. Part of the control loop of the OpenTK API. Executed only once.
+        /// </summary>
+        /// <param name="e">event parameters that triggered the method;</param>
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
 
-            GL.ClearColor(Color.FromArgb(1, 30, 30, 30));
             GL.Enable(EnableCap.DepthTest);
             GL.DepthFunc(DepthFunction.Less);
+
             GL.Hint(HintTarget.PolygonSmoothHint, HintMode.Nicest);
         }
 
+        /// <summary>
+        /// OnResize() method. Part of the control loop of the OpenTK API. Executed at least once (after OnLoad()).
+        /// </summary>
+        /// <param name="e">event parameters that triggered the method;</param>
         protected override void OnResize(EventArgs e)
         {
             base.OnResize(e);
 
-            GL.Viewport(0, 0, Width, Height);
+            // set background
+            GL.ClearColor(DEFAULT_BKG_COLOR);
 
-            double aspect_ratio = Width / (double)Height;
+            // set viewport
+            GL.Viewport(0, 0, this.Width, this.Height);
 
-            Matrix4 perspective = Matrix4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, (float)aspect_ratio, 1, 64);
+            // set perspective
+            Matrix4 perspectiva = Matrix4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, (float)this.Width / (float)this.Height, 1, 1024);
             GL.MatrixMode(MatrixMode.Projection);
-            GL.LoadMatrix(ref perspective);
+            GL.LoadMatrix(ref perspectiva);
 
-            Matrix4 lookat = Matrix4.LookAt(10, 10, 10, 0, 0, 0, 0, 1, 0);
-            GL.MatrixMode(MatrixMode.Modelview);
-            GL.LoadMatrix(ref lookat);
+            // set the eye
+            cam.SetCamera();
         }
 
+        /// <summary>
+        /// OnUpdateFrame() method. Part of the control loop of the OpenTK API. Executed periodically, with a frequency determined when launching
+        /// the graphics window (<see cref="GameWindow.Run(double, double)"/>). In this case should be 30.00 (if unmodified).
+        ///
+        /// All logic should reside here!
+        /// </summary>
+        /// <param name="e">event parameters that triggered the method;</param>
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
             base.OnUpdateFrame(e);
+            updatesCounter++;
 
-            KeyboardState keyboard = Keyboard.GetState();
-            MouseState mouse = Mouse.GetState();
+            if (displayMarker)
+            {
+                TimeStampIt("update", updatesCounter.ToString());
+            }
 
-            cube.SetColor();
+            // LOGIC CODE
+            KeyboardState currentKeyboard = Keyboard.GetState();
+            MouseState currentMouse = Mouse.GetState();
 
-
-            if (keyboard[Key.Escape])
+            if (currentKeyboard[Key.Escape])
             {
                 Exit();
             }
+
+            if (currentKeyboard[Key.H] && !previousKeyboard[Key.H])
+            {
+                DisplayHelp();
+            }
+
+            if (currentKeyboard[Key.R] && !previousKeyboard[Key.R])
+            {
+                GL.ClearColor(DEFAULT_BKG_COLOR);
+                ax.Show();
+                grid.Show();
+            }
+
+            if (currentKeyboard[Key.K] && !previousKeyboard[Key.K])
+            {
+                ax.ToggleVisibility();
+            }
+
+            if (currentKeyboard[Key.B] && !previousKeyboard[Key.B])
+            {
+                GL.ClearColor(rando.RandomColor());
+            }
+
+            if (currentKeyboard[Key.V] && !previousKeyboard[Key.V])
+            {
+                grid.ToggleVisibility();
+            }
+
+            if (currentKeyboard[Key.O] && !previousKeyboard[Key.O])
+            {
+                objy.ToggleVisibility();
+            }
+
+            // camera control (isometric mode)
+            if (currentKeyboard[Key.W])
+            {
+                cam.MoveForward();
+            }
+            if (currentKeyboard[Key.S])
+            {
+                cam.MoveBackward();
+            }
+            if (currentKeyboard[Key.A])
+            {
+                cam.MoveLeft();
+            }
+            if (currentKeyboard[Key.D])
+            {
+                cam.MoveRight();
+            }
+            if (currentKeyboard[Key.Q])
+            {
+                cam.MoveUp();
+            }
+            if (currentKeyboard[Key.E])
+            {
+                cam.MoveDown();
+            }
+
+            //object spawn
+            if (currentMouse[MouseButton.Left] && !previousMouse[MouseButton.Left])
+            {
+                objec = new Objectoid(GRAVITY, "./../../date.txt");
+            }
+
+            if (currentKeyboard[Key.G] && !previousKeyboard[Key.G])
+            {
+                GRAVITY = !GRAVITY;
+            }
+            if (currentKeyboard[Key.C] && !previousKeyboard[Key.C])
+            {
+                objec.ToogleVisibility();
+            }
+            // helper functions
+            if (currentKeyboard[Key.L] && !previousKeyboard[Key.L])
+            {
+                displayMarker = !displayMarker;
+            }
+
+            ////Apelarea functiilor pentru schimbarea perspectivei asupra obiectului
+            if (currentKeyboard[Key.N] && !previousKeyboard[Key.N])
+            {
+                cam.SetCameraN();
+            }
+            if (currentKeyboard[Key.F] && !previousKeyboard[Key.F])
+            {
+                cam.SetCameraF();
+            }
+
+            previousKeyboard = currentKeyboard;
+            previousMouse = currentMouse;
+            // END logic code
         }
+
+        /// <summary>
+        /// OnRenderFrame() method. Part of the control loop of the OpenTK API. Executed periodically, with a frequency determined when launching
+        /// the graphics window (<see cref="GameWindow.Run(double, double)"/>). In this case should be 0.00 (if unmodified) - the rendering is triggered
+        /// only when the scene is modified.
+        ///
+        /// All render calls should reside here!
+        /// </summary>
+        /// <param name="e">event parameters that triggered the method;</param>
         protected override void OnRenderFrame(FrameEventArgs e)
         {
             base.OnRenderFrame(e);
+            framesCounter++;
+
+            if (displayMarker)
+            {
+                TimeStampIt("render", framesCounter.ToString());
+            }
 
             GL.Clear(ClearBufferMask.ColorBufferBit);
             GL.Clear(ClearBufferMask.DepthBufferBit);
 
-            axes.Draw();
+            // RENDER CODE
+            grid.Draw();
+            ax.Draw();
 
-            cube.Draw();
+            objec.Draw();
+            objec.UpdatePosition(GRAVITY);
+            objy.Draw();
+            // END render code
 
             SwapBuffers();
-
         }
+
+        /// <summary>
+        /// Internal method, used to dump the menu on the console window (text mode!)...
+        /// </summary>
+        private void DisplayHelp()
+        {
+            Console.WriteLine("\n      MENIU");
+            Console.WriteLine(" (H) - meniul");
+            Console.WriteLine(" (ESC) - parasire aplicatie");
+            Console.WriteLine(" (K) - schimbare vizibilitate sistem de axe");
+            Console.WriteLine(" (R) - resteaza scena la valori implicite");
+            Console.WriteLine(" (B) - schimbare culoare de fundal");
+            Console.WriteLine(" (V) - schimbare vizibilitate linii");
+            Console.WriteLine(" (W,A,S,D) - deplasare camera (izometric)");
+            Console.WriteLine(" (G) - manipuleaza gravitatea");
+            Console.WriteLine(" (Mouse Clic stanga) - genereaza un nou obiect la o inaltime aleatoare");
+            Console.WriteLine(" (C) - schimbare vizibilitate obiect");
+            Console.WriteLine(" (N) - vedere obiect de aproape");
+            Console.WriteLine(" (F) - vedere obiect de departe");
+        }
+
+        private void TimeStampIt(String source, String counter)
+        {
+            String dt = DateTime.Now.ToString("hh:mm:ss.ffff");
+            Console.WriteLine("     TSTAMP from <" + source + "> on iteration <" + counter + ">: " + dt);
+        }
+
     }
 }

@@ -7,31 +7,68 @@ using System.Text;
 using System.Threading.Tasks;
 namespace pascariu_cosmin_3134A
 {
-    class Axes // Clasa ce realizeaza desenarea axelor Ox,Oy si Oz
+    /// <summary>
+    /// This class renders an XYZ coordinates system for the 3D scene.
+    /// </summary>
+    class Axes
     {
-        public const int XYZ_SIZE = 25;
+        private bool myVisibility;
 
+        private const int AXIS_LENGTH = 75;
+
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        public Axes()
+        {
+            myVisibility = true;
+        }
+
+        /// <summary>
+        /// This methods handles the drawing of the object. Must be called - always - from OnRenderFrame() method! The drawing can be unconditional.
+        /// </summary>
         public void Draw()
         {
-            GL.LineWidth(2.0f);
+            if (myVisibility)
+            {
+                GL.LineWidth(1.0f);
 
-            GL.Begin(PrimitiveType.Lines);
-            // Desenează axa Ox
-            GL.Color3(Color.Red);
-            GL.Vertex3(0, 0, 0);
-            GL.Color3(Color.Blue);
-            GL.Vertex3(XYZ_SIZE, 0, 0);
-            // Desenează axa Oy.
-            GL.Color3(Color.Red);
-            GL.Vertex3(0, 0, 0);
-            GL.Color3(Color.Blue);
-            GL.Vertex3(0, XYZ_SIZE, 0);
-            // Desenează axa Oz.
-            GL.Color3(Color.Red);
-            GL.Vertex3(0, 0, 0);
-            GL.Color3(Color.Blue);
-            GL.Vertex3(0, 0, XYZ_SIZE);
-            GL.End();
+                GL.Begin(PrimitiveType.Lines);
+                GL.Color3(Color.Red);
+                GL.Vertex3(0, 0, 0);
+                GL.Vertex3(AXIS_LENGTH, 0, 0);
+                GL.Color3(Color.ForestGreen);
+                GL.Vertex3(0, 0, 0);
+                GL.Vertex3(0, AXIS_LENGTH, 0);
+                GL.Color3(Color.RoyalBlue);
+                GL.Vertex3(0, 0, 0);
+                GL.Vertex3(0, 0, AXIS_LENGTH);
+                GL.End();
+            }
+        }
+
+        /// <summary>
+        /// Sets visibility of the object ON.
+        /// </summary>
+        public void Show()
+        {
+            myVisibility = true;
+        }
+
+        /// <summary>
+        /// Sets visibility of the object OFF.
+        /// </summary>
+        public void Hide()
+        {
+            myVisibility = false;
+        }
+
+        /// <summary>
+        /// Toggles the myVisibility of the object. Once triggered, the attribute is applied automatically on drawing.
+        /// </summary>
+        public void ToggleVisibility()
+        {
+            myVisibility = !myVisibility;
         }
     }
 }
