@@ -21,3 +21,8 @@ D:\pascariu-cosmin-3134a\pascariu-cosmin-3134A\obj\Debug\pascariu-cosmin-3134A.c
 D:\pascariu-cosmin-3134a\pascariu-cosmin-3134A\obj\Debug\pascariu-cosmin-3134A.csproj.CopyComplete
 D:\pascariu-cosmin-3134a\pascariu-cosmin-3134A\obj\Debug\pascariu-cosmin-3134A.exe
 D:\pascariu-cosmin-3134a\pascariu-cosmin-3134A\obj\Debug\pascariu-cosmin-3134A.pdb
+D:\pascariu-cosmin-3134a\pascariu-cosmin-3134A\obj\Debug\pascariu-cosmin-3134A.csprojAssemblyReference.cache
+D:\pascariu-cosmin-3134a\pascariu-cosmin-3134A\bin\Debug\OpenTK.pdb
+D:\pascariu-cosmin-3134a\pascariu-cosmin-3134A\bin\Debug\OpenTK.GLControl.pdb
+D:\pascariu-cosmin-3134a\pascariu-cosmin-3134A\obj\Debug\pascariu_cosmin_3134A.Form1.resources
+D:\pascariu-cosmin-3134a\pascariu-cosmin-3134A\obj\Debug\pascariu-cosmin-3134A.csproj.GenerateResource.cache

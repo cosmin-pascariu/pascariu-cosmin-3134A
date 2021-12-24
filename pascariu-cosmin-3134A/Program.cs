@@ -1,23 +1,22 @@
 ﻿using System;
-using System.Drawing;
-using OpenTK;
-using OpenTK.Graphics;
-using OpenTK.Graphics.OpenGL;
-using OpenTK.Input;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace pascariu_cosmin_3134A
 {
-    class Program : GameWindow
+    static class Program
     {
-       
+        /// <summary>
+        /// The main entry point for the application.
+        /// </summary>
         [STAThread]
-        static void Main(string[] args)
+        static void Main()
         {
-            using (Window example = new Window())
-            {
-                example.Run(30.0, 0.0);
-            }
-
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+            Application.Run(new Form1());
         }
     }
 
